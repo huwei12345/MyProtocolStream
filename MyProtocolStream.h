@@ -3,7 +3,8 @@
 #include <string>
 
 namespace net {
-    
+    class Endl{};
+    extern Endl endl;
     enum Protocol{
         PACKET_LENGTH = 4,
         CHECKSUM_LENGTH = 2,
@@ -30,6 +31,7 @@ public:
     MyProtocolStream& operator<<(int32_t i);
     MyProtocolStream& operator<<(short s);
     MyProtocolStream& operator<<(char c);
+    MyProtocolStream& operator<<(Endl endl);
     //TODO:CString
 public:
     bool getCString(char* cstr, int &len, int maxLen = PACKET_LENGTH_MAX);

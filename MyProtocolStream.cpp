@@ -5,7 +5,8 @@
 #include <cmath>
 namespace net
 {
-
+    Endl endl;
+    
     uint64_t htonll(uint64_t num)
     {
         uint64_t result = 0;
@@ -185,7 +186,7 @@ namespace net
         char *p = &m_str[0];
         if (reverse == false)
         {
-            int64_t ss = htons(s);
+            short ss = htons(s);
             m_str.append((char *)&ss, sizeof(ss));
         }
         else
@@ -219,9 +220,9 @@ namespace net
             outlen = 0;
             return false;
         }
-        cstr = cur;
         outlen = fieldlen;
-        m_pos += headlen;
+        memcpy(cstr, cur, outlen);
+        m_pos += fieldlen;
         return true;
     }
 
@@ -240,6 +241,7 @@ namespace net
         }
         char *cur = &m_str[m_pos];
         cur += headlen;
+        m_pos += headlen;
         if (m_pos + fieldlen > m_str.length())
         {
             return false;
@@ -259,6 +261,7 @@ namespace net
         }
         // user buffer is not enough
         char *cur = &m_str[m_pos];
+        m_pos += headlen;
         cur += headlen;
         if (m_pos + fieldlen > m_str.length())
         {
@@ -283,6 +286,7 @@ namespace net
         // user buffer is not enough
         char *cur = &m_str[m_pos];
         cur += headlen;
+        m_pos += headlen;
         if (m_pos + fieldlen > m_str.length())
         {
             return false;
@@ -310,7 +314,7 @@ namespace net
             if ((buf[i] & 0x80) == 0x00)
                 break;
         }
-        if (m_pos + sizeof(int64_t) > m_str.length())
+        if (m_pos + headlen > m_str.length())
             return false;
 
         unsigned int value;
@@ -455,7 +459,13 @@ namespace net
         loadChar(c);
         return *this;
     }
-    MyProtocolStream& MyProtocolStream::operator>>(std::string &str) {
+    MyProtocolStream &MyProtocolStream::operator<<(Endl endl)
+    {
+        flush();
+        return *this;
+    }
+    MyProtocolStream &MyProtocolStream::operator>>(std::string &str)
+    {
         getString(str);
         return *this;
     }
